@@ -13,10 +13,16 @@ Copy `example/default.dockerfile` (or `example/app-with-native-dependencies.dock
 Edit the `Dockerfile` you copied into your project, changing the first line so that the numbers at the end match the version of Meteor of your project. For example:
 
 ```Dockerfile
-FROM ripplesciencedocker/meteor-base:1.8.3
+FROM ripplesciencedocker/meteor-base:1.10.2
 ```
 
-if your project is running under Meteor 1.8.3. See your app’s `.meteor/release` file to get its Meteor release version. This version must match an available tag from [disney/meteor-base](https://cloud.docker.com/repository/docker/ripplesciencedocker/meteor-base/tags).
+if your project is running under Meteor 1.10.2. See your app’s `.meteor/release` file to get its Meteor release version. This version must match an available tag from [disney/meteor-base](https://cloud.docker.com/repository/docker/geoffreybooth/meteor-base/tags).
+
+If necessary, update version in the `FROM node` line to use the Node version appropriate for your release of Meteor. From your application folder, you can get this version via the following command:
+
+```bash
+docker run --rm geoffreybooth/meteor-base:$(cat ./.meteor/release | cut -c8-99) meteor node --version | cut -c2-99 | grep -o "[0-9\.]*"
+```
 
 Also copy in `example/.dockerignore` and `example/docker-compose.yml` to your project’s root. Then, from the root of your project:
 
@@ -28,6 +34,8 @@ This builds an image for your app and starts it, along with a linked container f
 
 Feel free to edit the `Dockerfile` you copied into your project, for example to add Linux dependencies. The beauty of the multistage build pattern is that this base image can stay lean, without needing `ONBUILD` triggers or configuration files for you to influence the image that gets built. You control the final image via your own `Dockerfile`, so you can do whatever you want.
 
+If you want any command run on startup before the Meteor app itself is run, have your Dockerfile save a file `startup.sh` into `$SCRIPTS_FOLDER`. It will be executed automatically by `entrypoint.sh`.
+
 ## Why this image, instead of some others?
 
 There are several great Meteor Docker images out there. We built this one because none of the existing open source ones met our needs:
@@ -37,3 +45,13 @@ There are several great Meteor Docker images out there. We built this one becaus
 - [meteor/galaxy-images](https://github.com/meteor/galaxy-images) and [Treecom/meteor-alpine](https://github.com/Treecom/alpine-meteor) both require building the Meteor app in the host machine, before copying the built app into the Docker container. We wanted to avoid needing Node and Meteor installed on our CI servers, and we want the predictability of building within the Docker environment.
 
 Other projects I looked at generally had one or more of the disadvantages cited above. Multistage Docker builds have only been possible since Docker 17.05, which came out in May 2017, and most projects on the Web were designed before then and therefore don’t take advantage of the possibilities offered by a multistage architecture.
+
+## Test
+
+```bash
+# Build all images
+./build.sh
+
+# Test all images (requires Node, uses Puppeteer which will download headless Chrome)
+./test.sh
+```
