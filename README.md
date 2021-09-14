@@ -13,7 +13,7 @@ Copy `example/default.dockerfile` (or `example/app-with-native-dependencies.dock
 Edit the `Dockerfile` you copied into your project, changing the first line so that the numbers at the end match the version of Meteor of your project. For example:
 
 ```Dockerfile
-FROM ripplesciencedocker/meteor-base:2.3.5
+FROM ripplesciencedocker/meteor-base:2.2.3
 ```
 
 if your project is running under Meteor 2.2. See your app’s `.meteor/release` file to get its Meteor release version. This version must match an available tag from [disney/meteor-base](https://cloud.docker.com/repository/docker/geoffreybooth/meteor-base/tags).
