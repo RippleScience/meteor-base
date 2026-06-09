@@ -16,6 +16,6 @@
   },
   "homepage": "https://github.com/disney/meteor-base#readme",
   "dependencies": {
-    "puppeteer": "^2.1.1"
+    "puppeteer": "^22.0.0"
   }
 }

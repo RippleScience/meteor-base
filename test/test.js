@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer');
 	let browser, page, message;
 
 	try {
-		browser = await puppeteer.launch();
+		browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
 		page = await browser.newPage();
 		await page.goto('http://localhost/');
 
@@ -22,7 +22,7 @@ const puppeteer = require('puppeteer');
 			await page.screenshot({path: './screenshot.png'});
 		}
 
-		await browser.close();
+		if (browser) await browser.close();
 
 		process.exit((testPassed) ? 0 : 1);
 	}
