@@ -61,6 +61,10 @@ for version in "${meteor_versions[@]}"; do
 	if [[ "${version}" == 1.6* ]] || [[ "${version}" == 1.7* ]] || [[ "${version}" == 1.8* ]]; then
 		node_version='8.17.0'
 
+	# Versions 2.12 need Node 14.21.3 (must be before 2.1* glob which would also match 2.12)
+	elif [[ "${version}" == 2.12* ]]; then
+		node_version='14.21.3'
+
 	# Versions 1.9 through 2.2 need Node 12.22.1
 	elif [[ "${version}" == 1.9* ]] || [[ "${version}" == 1.10* ]] || [[ "${version}" == 1.11* ]] || [[ "${version}" == 1.12* ]] || [[ "${version}" == 2.0* ]] || [[ "${version}" == 2.1* ]] || [[ "${version}" == 2.2 ]]; then
 		node_version='12.22.1'
@@ -89,17 +93,19 @@ for version in "${meteor_versions[@]}"; do
 	elif [[ "${version}" == 2.3.3 ]] || [[ "${version}" == 2.3.4 ]]; then
 		node_version='14.17.4'
 
-	# Versions 2.12 need Node 14.21.4
-	elif [[ "${version}" == 2.12* ]]; then
-		node_version='14.21.4'
-
 	# Versions >= 2.3.5 need Node 14.17.5
 	else
 		node_version='14.17.5'
 	fi
 
+	# Versions >= 2.12 default to React; use --blaze to get the counter template the test expects
+	create_flags=''
+	if [[ "${version}" == 2.12* ]]; then
+		create_flags='--blaze'
+	fi
+
 	echo 'Creating test app...'
-	run_with_suppressed_output "docker run --rm --volume ${PWD}:/opt/tmp --workdir /opt/tmp geoffreybooth/meteor-base:${version} meteor create --release=${version} test-app"
+	run_with_suppressed_output "docker run --rm --volume ${PWD}:/opt/tmp --workdir /opt/tmp geoffreybooth/meteor-base:${version} meteor create --release=${version} ${create_flags} test-app"
 
 	if [[ "${version}" == 1.6.1* ]] || [[ "${version}" == 1.7 ]] || [[ "${version}" == 1.7.0* ]]; then
 		echo 'Fixing Babel dependency...'
