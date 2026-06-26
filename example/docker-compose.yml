@@ -15,7 +15,7 @@ services:
       PORT: 3000
 
   mongo:
-    image: mongo:latest
+    image: mongo:6.0
     command:
       - --storageEngine=wiredTiger
     volumes:
